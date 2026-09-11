@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>About Us | AMMY's FASHION HUB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-animation"></div>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">AMMY's <span>FASHION HUB</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="/">Home</a>
+        <a href="/store">Store</a>
+        <a href="/about" class="active">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart">Buy / Cart</a>
+        <a href="/login" id="nav-login" class="btn btn-outline btn-sm">Login</a>
+        <a href="/profile" id="nav-profile" class="btn btn-outline btn-sm" style="display:none;">Profile</a>
+        <button id="nav-logout" class="btn btn-outline btn-sm" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="nav-actions">
+        <a href="/cart" class="cart-btn">🛒 <span class="cart-count" style="display:none;">0</span></a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our <span class="accent">Story</span></h2>
+        <p>The journey of AMMY's FASHION HUB — where quality meets contemporary Indian style.</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text">
+          <h2>AMMY's FASHION HUB</h2>
+          <p>
+            Born from a passion for exceptional clothing, AMMY's FASHION HUB is an exclusive, premium, and original clothing brand dedicated to elevating everyday wardrobes. We believe fashion should feel luxurious yet remain accessible.
+          </p>
+          <p>
+            Every piece is carefully designed with premium fabrics, modern silhouettes, and meticulous craftsmanship. From crisp formal shirts and tailored suits to relaxed streetwear, elegant ethnic wear, and playful kids' apparel — we create for the whole family.
+          </p>
+          <p>
+            Our mission is simple: deliver superior quality, embrace sustainable practices, and offer affordable luxury that makes you look and feel your best.
+          </p>
+          <a href="/store" class="btn btn-primary" style="margin-top:1rem;">Shop the Collection</a>
+        </div>
+        <div>
+          <img src="/pictures/startup-small-business-owner-working-260nw-2757294051.webp" alt="AMMY's fashion team preparing clothing orders" style="border-radius:var(--radius);border:1px solid var(--border);width:100%;height:400px;object-fit:cover;">
+        </div>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🧵</div>
+          <h3>Superior Quality</h3>
+          <p>We source premium fabrics and partner with skilled artisans to ensure every garment meets the highest standards of durability and comfort.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🌍</div>
+          <h3>Sustainable Fashion</h3>
+          <p>Conscious material choices and responsible production practices help us reduce our footprint while staying true to timeless style.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">💫</div>
+          <h3>Affordable Luxury</h3>
+          <p>High-end aesthetics and refined details at prices that respect the modern customer — luxury without the excess markups.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>AMMY's FASHION HUB</h4>
+        <p>Premium original clothing for Men, Women & Kids.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/store">Store</a>
+        <a href="/about">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart">Cart</a>
+      </div>
+      <div>
+        <h4>Visit Us</h4>
+        <p>Kalyan Phata, Thane, Maharashtra, India</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>support@ammysfashionhub.com</p>
+        <p>+91 98765 43210</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2024–2026 AMMY's FASHION HUB. All rights reserved.</div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

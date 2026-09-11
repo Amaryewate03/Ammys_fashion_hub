@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>AMMY's FASHION HUB | Premium Clothing Brand</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-animation"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">AMMY's <span>FASHION HUB</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="active">Home</a>
+        <a href="/store">Store</a>
+        <a href="/about">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart">Buy / Cart</a>
+        <a href="/login" id="nav-login" class="btn btn-outline btn-sm">Login</a>
+        <a href="/profile" id="nav-profile" class="btn btn-outline btn-sm" style="display:none;">Profile</a>
+        <button id="nav-logout" class="btn btn-outline btn-sm" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="nav-actions">
+        <a href="/cart" class="cart-btn" title="Cart">🛒 <span class="cart-count" style="display:none;">0</span></a>
+        <button class="mobile-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-image" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Exclusive Premium Brand</div>
+      <h1>AMMY's FASHION HUB</h1>
+      <p>Discover original, high-quality apparel crafted for modern style. Premium fabrics, timeless designs, and affordable luxury — redefine your wardrobe.</p>
+      <div class="hero-btns">
+        <a href="/store" class="btn btn-primary">Explore Collection</a>
+        <a href="/about" class="btn btn-outline">Our Story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Showcase -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Featured <span class="accent">Collection</span></h2>
+        <p>Handpicked pieces that define the AMMY aesthetic — bold, refined, and uniquely yours.</p>
+      </div>
+      <div class="hero-showcase" id="featuredProducts">
+        <div class="loading">Loading featured pieces...</div>
+      </div>
+      <div class="text-center mt-2">
+        <a href="/store" class="btn btn-primary">View Full Store</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Highlight -->
+  <section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why <span class="accent">AMMY</span>?</h2>
+        <p>We are not just a clothing brand — we are a statement of quality, originality, and contemporary Indian fashion.</p>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">✨</div>
+          <h3>Superior Quality</h3>
+          <p>Premium fabrics and meticulous craftsmanship in every stitch.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🌿</div>
+          <h3>Sustainable Fashion</h3>
+          <p>Conscious choices for a better planet without compromising style.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">💎</div>
+          <h3>Affordable Luxury</h3>
+          <p>High-end looks at prices that respect your wallet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>AMMY's FASHION HUB</h4>
+        <p>Premium original clothing for Men, Women & Kids. Crafted with care in India.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/store">Store</a>
+        <a href="/about">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart">Cart</a>
+      </div>
+      <div>
+        <h4>Visit Us</h4>
+        <p>Kalyan Phata, Thane,<br>Maharashtra, India</p>
+        <p>Mon–Sat: 10 AM – 8 PM</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>support@ammysfashionhub.com</p>
+        <p>+91 98765 43210</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2024–2026 AMMY's FASHION HUB. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+  <script>
+    async function loadFeatured() {
+      try {
+        const res = await fetch(API + '/products?featured=true');
+        const products = await res.json();
+        const container = document.getElementById('featuredProducts');
+        if (!products.length) {
+          container.innerHTML = '<p class="text-center">No featured products yet.</p>';
+          return;
+        }
+        function productImageUrl(image) {
+          if (!image || !image.includes('images.pexels.com')) return image;
+          const separator = image.includes('?') ? '&' : '?';
+          return `${image}${separator}auto=compress&cs=tinysrgb&w=600&h=800&fit=crop`;
+        }
+        container.innerHTML = products.slice(0, 4).map(p => `
+          <div class="showcase-card">
+            <img src="${productImageUrl(p.image)}" alt="${p.title}" loading="lazy" decoding="async">
+            <div class="info">
+              <h3>${p.title}</h3>
+              <div class="price">${formatPrice(p.price)}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('featuredProducts').innerHTML = '<p class="text-center">Unable to load products. Please ensure the server is running.</p>';
+      }
+    }
+    loadFeatured();
+</script>
+</body>
+</html>

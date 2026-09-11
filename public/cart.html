@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Cart & Checkout | AMMY's FASHION HUB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-animation"></div>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">AMMY's <span>FASHION HUB</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="/">Home</a>
+        <a href="/store">Store</a>
+        <a href="/about">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart" class="active">Buy / Cart</a>
+        <a href="/login" id="nav-login" class="btn btn-outline btn-sm">Login</a>
+        <a href="/profile" id="nav-profile" class="btn btn-outline btn-sm" style="display:none;">Profile</a>
+        <button id="nav-logout" class="btn btn-outline btn-sm" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="nav-actions">
+        <a href="/cart" class="cart-btn">🛒 <span class="cart-count" style="display:none;">0</span></a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Your <span class="accent">Cart</span> & Checkout</h2>
+        <p>Review your items and complete your order. Login required to place order.</p>
+      </div>
+
+      <div id="cartContent">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>AMMY's FASHION HUB</h4>
+        <p>Premium original clothing.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/store">Store</a>
+        <a href="/about">About</a>
+        <a href="/location">Location</a>
+      </div>
+      <div>
+        <h4>Visit Us</h4>
+        <p>Kalyan Phata, Thane, Maharashtra</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>support@ammysfashionhub.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2024–2026 AMMY's FASHION HUB.</div>
+  </footer>
+
+  <div class="order-success-modal" id="orderSuccessModal" hidden>
+    <div class="order-success-card" role="dialog" aria-modal="true" aria-labelledby="orderSuccessTitle">
+      <div class="success-mark">✓</div>
+      <h2 id="orderSuccessTitle">Congratulations!</h2>
+      <p>Your order has been placed successfully.</p>
+      <div class="success-details">
+        <div><span>Order ID</span><strong id="successOrderId"></strong></div>
+        <div><span>Payment Method</span><strong id="successPaymentMethod"></strong></div>
+        <div><span>Transaction</span><strong id="successTransactionId"></strong></div>
+        <div><span>Status</span><strong>Completed</strong></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="closeOrderSuccess()">View My Orders</button>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    function renderCart() {
+      const cart = getCart();
+      const container = document.getElementById('cartContent');
+
+      if (!cart.length) {
+        container.innerHTML = `
+          <div class="empty-cart">
+            <div class="icon">🛒</div>
+            <h3>Your cart is empty</h3>
+            <p>Explore our collection and add some premium pieces.</p>
+            <a href="/store" class="btn btn-primary" style="margin-top:1.5rem;">Go to Store</a>
+          </div>
+        `;
+        return;
+      }
+
+      const itemsHtml = cart.map((item, i) => `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.title}">
+          <div class="cart-item-info">
+            <h3>${item.title}</h3>
+            <div class="meta">${item.size ? 'Size: ' + item.size : ''} ${item.color ? '· Color: ' + item.color : ''}</div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+              <span>${item.quantity}</span>
+              <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+            </div>
+          </div>
+          <div class="cart-item-price">${formatPrice(item.price * item.quantity)}</div>
+          <button class="remove-btn" onclick="removeItem(${i})" title="Remove">✕</button>
+        </div>
+      `).join('');
+
+      const total = getCartTotal();
+      const user = getUser();
+
+      container.innerHTML = `
+        <div class="cart-layout">
+          <div>
+            <div class="cart-items">${itemsHtml}</div>
+          </div>
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row"><span>Subtotal</span><span>${formatPrice(total)}</span></div>
+            <div class="summary-row"><span>Shipping</span><span>Free</span></div>
+            <div class="summary-row total"><span>Total</span><span>${formatPrice(total)}</span></div>
+
+            ${user ? `
+              <div style="margin-top:1.5rem;">
+                <h4 style="margin-bottom:1rem;font-size:1rem;">Shipping Details</h4>
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="shipName" value="${user.name || ''}" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="tel" id="shipPhone" value="${user.phone || ''}" required>
+                </div>
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea id="shipAddress" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="shipCity" required>
+                </div>
+                <div class="form-group">
+                  <label>Pincode</label>
+                  <input type="text" id="shipPincode" required>
+                </div>
+
+                <div class="payment-options">
+                  <h4>Payment Method</h4>
+                  <label class="payment-option"><input type="radio" name="payment" value="COD" checked onchange="togglePaymentFields()"> Cash on Delivery (COD)</label>
+                  <label class="payment-option"><input type="radio" name="payment" value="UPI" onchange="togglePaymentFields()"> UPI / QR Code</label>
+                  <label class="payment-option"><input type="radio" name="payment" value="Card" onchange="togglePaymentFields()"> Credit / Debit Card</label>
+                  <label class="payment-option"><input type="radio" name="payment" value="NetBanking" onchange="togglePaymentFields()"> Net Banking</label>
+
+                  <div id="cardPaymentFields" class="payment-fields" hidden>
+                    <div class="form-group">
+                      <label for="cardType">Card Type</label>
+                      <select id="cardType"><option value="">Select card type</option><option value="Debit Card">Debit Card</option><option value="Credit Card">Credit Card</option></select>
+                    </div>
+                    <div class="form-group">
+                      <label for="cardNumber">Card Number</label>
+                      <input type="text" id="cardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="form-group">
+                      <label for="cardName">Name on Card</label>
+                      <input type="text" id="cardName" autocomplete="cc-name">
+                    </div>
+                    <div class="payment-fields-row">
+                      <div class="form-group"><label for="cardExpiry">Expiry</label><input type="text" id="cardExpiry" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY"></div>
+                      <div class="form-group"><label for="cardCvv">CVV</label><input type="password" id="cardCvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123"></div>
+                    </div>
+                  </div>
+
+                  <div id="upiPaymentFields" class="payment-fields" hidden>
+                    <div class="upi-qr-box">
+                      <p class="upi-qr-title">Scan to pay with any UPI app</p>
+                      <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=upi%3A%2F%2Fpay%3Fpa%3D9594881823%40axl%26pn%3DAMMY%2527s%2520FASHION%2520HUB%26cu%3DINR" alt="AMMY's FASHION HUB UPI QR code">
+                      <strong>UPI ID: 9594881823@axl</strong>
+                    </div>
+                    <div class="form-group">
+                      <label for="upiId">UPI ID / UPI Number</label>
+                      <input type="text" id="upiId" autocomplete="off" value="9594881823@axl" placeholder="yourname@upi or UPI number">
+                    </div>
+                    <div class="form-group">
+                      <label for="upiReference">QR / UPI Transaction ID</label>
+                      <input type="text" id="upiReference" autocomplete="off" placeholder="Enter payment reference number">
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" onclick="placeOrder()">Confirm & Place Order</button>
+              </div>
+            ` : `
+              <div style="margin-top:1.5rem;text-align:center;">
+                <p style="color:var(--text-secondary);margin-bottom:1rem;">Please login to place your order.</p>
+                <a href="/login" class="btn btn-primary btn-block">Login / Register</a>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function changeQty(index, delta) {
+      updateQty(index, delta);
+      renderCart();
+    }
+
+    function removeItem(index) {
+      removeFromCart(index);
+      renderCart();
+    }
+
+    function togglePaymentFields() {
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+      let transactionId = '';
+      const cardFields = document.getElementById('cardPaymentFields');
+      const upiFields = document.getElementById('upiPaymentFields');
+      const isCard = paymentMethod === 'Card';
+      const isUpi = paymentMethod === 'UPI';
+
+      cardFields.hidden = !isCard;
+      upiFields.hidden = !isUpi;
+      cardFields.querySelectorAll('input, select').forEach(input => input.required = isCard);
+      upiFields.querySelectorAll('input').forEach(input => input.required = isUpi);
+    }
+
+    async function placeOrder() {
+      const cart = getCart();
+      if (!cart.length) return showToast('Cart is empty');
+
+      const shippingAddress = {
+        fullName: document.getElementById('shipName').value.trim(),
+        phone: document.getElementById('shipPhone').value.trim(),
+        address: document.getElementById('shipAddress').value.trim(),
+        city: document.getElementById('shipCity').value.trim(),
+        pincode: document.getElementById('shipPincode').value.trim()
+      };
+
+      if (!shippingAddress.fullName || !shippingAddress.phone || !shippingAddress.address || !shippingAddress.city || !shippingAddress.pincode) {
+        return showToast('Please fill all shipping fields');
+      }
+
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+      if (paymentMethod === 'Card') {
+        const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        if (!/^\d{16,19}$/.test(cardNumber)) return showToast('Enter a valid card number');
+        if (!/^\d{2}\/\d{2}$/.test(document.getElementById('cardExpiry').value.trim())) return showToast('Enter expiry as MM/YY');
+        if (!/^\d{3,4}$/.test(document.getElementById('cardCvv').value.trim())) return showToast('Enter a valid CVV');
+      }
+      if (paymentMethod === 'UPI' && (!document.getElementById('upiId').value.trim() || !document.getElementById('upiReference').value.trim())) {
+        return showToast('Enter UPI ID and transaction ID');
+      }
+      if (paymentMethod === 'UPI') transactionId = document.getElementById('upiReference').value.trim();
+      if (paymentMethod === 'Card') transactionId = 'Card payment';
+      if (paymentMethod === 'NetBanking') transactionId = 'Net banking payment';
+      if (paymentMethod === 'COD') transactionId = 'Pay on delivery';
+      const totalAmount = getCartTotal();
+
+      try {
+        const res = await fetch(API + '/orders', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            items: cart,
+            totalAmount,
+            shippingAddress,
+            paymentMethod,
+            transactionId
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.message || 'Order failed');
+          if (res.status === 401) setTimeout(() => window.location.href = '/login', 1500);
+          return;
+        }
+        localStorage.removeItem('cart');
+        updateCartCount();
+        showOrderSuccess(data);
+      } catch (e) {
+        showToast('Network error. Try again.');
+      }
+    }
+
+    function showOrderSuccess(data) {
+      const modal = document.getElementById('orderSuccessModal');
+      document.getElementById('successOrderId').textContent = data.orderId;
+      document.getElementById('successPaymentMethod').textContent = data.paymentMethod || 'COD';
+      document.getElementById('successTransactionId').textContent = data.transactionId || 'Pay on delivery';
+      modal.hidden = false;
+    }
+
+    function closeOrderSuccess() {
+      document.getElementById('orderSuccessModal').hidden = true;
+      window.location.href = '/profile';
+    }
+
+    renderCart();
+  </script>
+  <script src="app.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof renderCart === 'function') {
+        renderCart();
+      }
+    });
+  </script>
+</body>
+</html>
+</body>
+</html>

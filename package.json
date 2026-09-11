@@ -1,0 +1,30 @@
+{
+  "name": "ammys-fashion-hub",
+  "version": "1.0.0",
+  "description": "E-Commerce web application for AMMY's FASHION HUB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node seed.js",
+    "admin:create": "node create-admin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.6.0",
+    "morgan": "^1.10.0"
+  },
+  "keywords": [
+    "ecommerce",
+    "fashion",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "AMMY's Fashion Hub",
+  "license": "MIT"
+}

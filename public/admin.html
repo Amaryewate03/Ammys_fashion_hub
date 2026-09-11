@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Admin Dashboard | AMMY's FASHION HUB</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="admin-page">
+  <div class="bg-animation"></div>
+
+  <main class="admin-shell">
+    <section class="admin-login" id="adminLoginView">
+      <a href="/" class="logo">AMMY's <span>FASHION HUB</span></a>
+      <div class="admin-login-card">
+        <p class="admin-eyebrow">PRIVATE AREA</p>
+        <h1>Admin Dashboard</h1>
+        <p>Manage your store, customers and orders from one place.</p>
+        <form id="adminLoginForm">
+          <div class="form-group">
+            <label for="adminEmail">Admin Email</label>
+            <input type="email" id="adminEmail" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" required autocomplete="current-password">
+          </div>
+          <p class="admin-message error" id="adminLoginMessage"></p>
+          <button class="btn btn-primary btn-block" type="submit">Login to Dashboard</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="admin-dashboard" id="adminDashboardView" hidden>
+      <header class="admin-header">
+        <div>
+          <p class="admin-eyebrow">AMMY's FASHION HUB</p>
+          <h1>Admin Dashboard</h1>
+        </div>
+        <div class="admin-header-actions">
+          <span id="adminName"></span>
+          <button class="btn btn-outline btn-sm" id="adminLogout">Logout</button>
+        </div>
+      </header>
+
+      <nav class="admin-tabs" aria-label="Admin sections">
+        <button class="admin-tab active" data-section="overview">Overview</button>
+        <button class="admin-tab" data-section="products">Products</button>
+        <button class="admin-tab" data-section="orders">Orders</button>
+        <button class="admin-tab" data-section="customers">Customers</button>
+        <button class="admin-tab" data-section="enquiries">Enquiries</button>
+      </nav>
+
+      <p class="admin-message" id="adminMessage"></p>
+
+      <section class="admin-section active" id="section-overview">
+        <div class="admin-stats">
+          <div class="admin-stat"><span>Products</span><strong id="statProducts">0</strong></div>
+          <div class="admin-stat"><span>Customers</span><strong id="statUsers">0</strong></div>
+          <div class="admin-stat"><span>Orders</span><strong id="statOrders">0</strong></div>
+          <div class="admin-stat"><span>New Enquiries</span><strong id="statEnquiries">0</strong></div>
+          <div class="admin-stat"><span>Revenue</span><strong id="statRevenue">₹0</strong></div>
+        </div>
+        <div class="admin-panel admin-quick-panel">
+          <h2>Store controls</h2>
+          <p>Use Products to add or update your catalogue, Orders to change delivery status, and Customers to view registered profiles.</p>
+        </div>
+      </section>
+
+      <section class="admin-section" id="section-products">
+        <div class="admin-section-heading">
+          <div><h2>Products</h2><p>Manage what customers see in the store.</p></div>
+          <button class="btn btn-primary" id="newProductButton">Add Product</button>
+        </div>
+        <div class="admin-panel admin-form-panel" id="productFormPanel" hidden>
+          <h3 id="productFormTitle">Add Product</h3>
+          <form id="productForm">
+            <input type="hidden" id="productId">
+            <div class="admin-form-grid">
+              <div class="form-group"><label for="productTitle">Title</label><input id="productTitle" required></div>
+              <div class="form-group"><label for="productPrice">Price (₹)</label><input id="productPrice" type="number" min="0" required></div>
+              <div class="form-group"><label for="productCategory">Category</label><select id="productCategory" required><option>Shirts</option><option>T-Shirts</option><option>Pants</option><option>Joggers</option><option>Hoodies</option><option>Jackets</option><option>Dresses</option><option>Ethnic Wear</option><option>Suits</option><option>Kids Wear</option></select></div>
+              <div class="form-group"><label for="productGender">Gender</label><select id="productGender" required><option>Men</option><option>Women</option><option>Kids</option><option>Unisex</option></select></div>
+              <div class="form-group"><label for="productStyle">Style</label><select id="productStyle" required><option>Traditional/Ethnic</option><option>Casuals</option><option>Formals</option><option>Streetwear</option></select></div>
+              <div class="form-group"><label for="productStock">Stock</label><input id="productStock" type="number" min="0" value="50" required></div>
+              <div class="form-group admin-form-wide"><label for="productImage">Image URL</label><input id="productImage" type="url" required></div>
+              <div class="form-group admin-form-wide"><label for="productDescription">Description</label><textarea id="productDescription" rows="3" required></textarea></div>
+              <div class="form-group"><label for="productSizes">Sizes (comma separated)</label><input id="productSizes" placeholder="S, M, L, XL"></div>
+              <div class="form-group"><label for="productColors">Colors (comma separated)</label><input id="productColors" placeholder="Black, White"></div>
+              <label class="admin-checkbox"><input id="productFeatured" type="checkbox"> Featured product</label>
+            </div>
+            <div class="admin-form-actions"><button class="btn btn-primary" type="submit">Save Product</button><button class="btn btn-outline" type="button" id="cancelProduct">Cancel</button></div>
+          </form>
+        </div>
+        <div class="admin-panel admin-table-wrap"><table class="admin-table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Featured</th><th>Actions</th></tr></thead><tbody id="productsTable"></tbody></table></div>
+      </section>
+
+      <section class="admin-section" id="section-orders">
+        <div class="admin-section-heading"><div><h2>Orders</h2><p>Review orders and update their current status.</p></div></div>
+        <div class="admin-panel admin-form-panel" id="orderFormPanel" hidden>
+          <h3>Edit Order</h3>
+          <form id="orderForm">
+            <input type="hidden" id="orderId">
+            <div class="admin-form-grid">
+              <div class="form-group"><label for="orderTotal">Total (₹)</label><input id="orderTotal" type="number" min="0" required></div>
+              <div class="form-group"><label for="orderPayment">Payment</label><select id="orderPayment"><option>COD</option><option>UPI</option><option>Card</option><option>NetBanking</option></select></div>
+              <div class="form-group"><label for="orderStatus">Status</label><select id="orderStatus"><option>Pending</option><option>Completed</option><option>Confirmed</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select></div>
+              <div class="form-group"><label for="orderTransaction">Transaction ID</label><input id="orderTransaction"></div>
+              <div class="form-group"><label for="orderFullName">Shipping Name</label><input id="orderFullName" required></div>
+              <div class="form-group"><label for="orderPhone">Shipping Phone</label><input id="orderPhone" required></div>
+              <div class="form-group admin-form-wide"><label for="orderAddress">Address</label><input id="orderAddress" required></div>
+              <div class="form-group"><label for="orderCity">City</label><input id="orderCity" required></div>
+              <div class="form-group"><label for="orderPincode">Pincode</label><input id="orderPincode" required></div>
+            </div>
+            <div class="admin-form-actions"><button class="btn btn-primary" type="submit">Save Order</button><button class="btn btn-outline" type="button" id="cancelOrder">Cancel</button></div>
+          </form>
+        </div>
+        <div class="admin-panel admin-table-wrap"><table class="admin-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+      </section>
+
+      <section class="admin-section" id="section-customers">
+        <div class="admin-section-heading"><div><h2>Customers</h2><p>Update, reset or remove registered customer profiles.</p></div></div>
+        <div class="admin-panel admin-form-panel" id="customerFormPanel" hidden>
+          <h3>Edit Customer</h3>
+          <form id="customerForm">
+            <input type="hidden" id="customerId">
+            <div class="admin-form-grid">
+              <div class="form-group"><label for="customerName">Name</label><input id="customerName" required></div>
+              <div class="form-group"><label for="customerEmail">Email</label><input id="customerEmail" type="email" required></div>
+              <div class="form-group"><label for="customerPhone">Phone</label><input id="customerPhone"></div>
+              <div class="form-group"><label for="customerPassword">New Password</label><input id="customerPassword" type="password" minlength="6" placeholder="Leave blank to keep current"></div>
+            </div>
+            <div class="admin-form-actions"><button class="btn btn-primary" type="submit">Save Customer</button><button class="btn btn-outline" type="button" id="cancelCustomer">Cancel</button></div>
+          </form>
+        </div>
+        <div class="admin-panel admin-table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="customersTable"></tbody></table></div>
+      </section>
+
+      <section class="admin-section" id="section-enquiries">
+        <div class="admin-section-heading"><div><h2>Enquiries</h2><p>Review and manage messages submitted from the location page.</p></div></div>
+        <div class="admin-panel admin-form-panel" id="enquiryFormPanel" hidden>
+          <h3>Edit Enquiry</h3>
+          <form id="enquiryForm">
+            <input type="hidden" id="enquiryId">
+            <div class="admin-form-grid">
+              <div class="form-group"><label for="enquiryName">Name</label><input id="enquiryName" required></div>
+              <div class="form-group"><label for="enquiryEmail">Email</label><input id="enquiryEmail" type="email" required></div>
+              <div class="form-group"><label for="enquiryStatus">Status</label><select id="enquiryStatus"><option>New</option><option>In Progress</option><option>Resolved</option></select></div>
+              <div class="form-group admin-form-wide"><label for="enquiryMessage">Message</label><textarea id="enquiryMessage" rows="4" required></textarea></div>
+            </div>
+            <div class="admin-form-actions"><button class="btn btn-primary" type="submit">Save Enquiry</button><button class="btn btn-outline" type="button" id="cancelEnquiry">Cancel</button></div>
+          </form>
+        </div>
+        <div class="admin-panel admin-table-wrap"><table class="admin-table"><thead><tr><th>Contact</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="enquiriesTable"></tbody></table></div>
+      </section>
+    </section>
+  </main>
+  <script src="/admin.js"></script>
+</body>
+</html>

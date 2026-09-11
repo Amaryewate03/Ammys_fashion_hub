@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>My Profile | AMMY's FASHION HUB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-animation"></div>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">AMMY's <span>FASHION HUB</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="/">Home</a>
+        <a href="/store">Store</a>
+        <a href="/about">About Us</a>
+        <a href="/location">Location</a>
+        <a href="/cart">Buy / Cart</a>
+        <a href="/login" id="nav-login" class="btn btn-outline btn-sm">Login</a>
+        <a href="/profile" id="nav-profile" class="btn btn-outline btn-sm active" style="display:none;">Profile</a>
+        <button id="nav-logout" class="btn btn-outline btn-sm" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="nav-actions">
+        <a href="/cart" class="cart-btn">🛒 <span class="cart-count" style="display:none;">0</span></a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div id="profileContent">
+        <div class="loading">Loading profile...</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>AMMY's FASHION HUB</h4>
+        <p>Premium original clothing.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/store">Store</a>
+        <a href="/about">About</a>
+        <a href="/location">Location</a>
+      </div>
+      <div>
+        <h4>Visit Us</h4>
+        <p>Kalyan Phata, Thane, Maharashtra</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>support@ammysfashionhub.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2024–2026 AMMY's FASHION HUB.</div>
+  </footer>
+
+  <script src="/app.js"></script>
+  <script>
+    async function loadProfile() {
+      const token = getToken();
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/auth/me', {
+          headers: authHeaders()
+        });
+        if (!res.ok) {
+          logout();
+          return;
+        }
+        const { user } = await res.json();
+
+        let orders = user.orders || [];
+        try {
+          const oRes = await fetch(API + '/orders/my-orders', { headers: authHeaders() });
+          if (oRes.ok) {
+            const oData = await oRes.json();
+            if (oData.length) orders = oData;
+          }
+        } catch (_) {}
+
+        const initials = user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+        let ordersHtml = '';
+        if (!orders.length) {
+          ordersHtml = `
+            <div class="empty-cart" style="padding:2rem;">
+              <p>No orders yet.</p>
+              <a href="/store" class="btn btn-primary" style="margin-top:1rem;">Start Shopping</a>
+            </div>
+          `;
+        } else {
+          ordersHtml = `<div class="orders-list">` + orders.map(o => {
+            const items = (o.items || []).map(i => `
+              <div class="order-item-row">
+                <img src="${i.image || ''}" alt="">
+                <div>
+                  <strong>${i.title}</strong><br>
+                  <span style="color:var(--text-muted);font-size:0.85rem;">Qty: ${i.quantity} · ${formatPrice(i.price)}</span>
+                </div>
+              </div>
+            `).join('');
+            const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+            return `
+              <div class="order-card">
+                <div class="order-header">
+                  <span class="order-id">#${o.orderId}</span>
+                  <span class="order-status Completed">${o.status === 'Cancelled' ? 'Cancelled' : 'Completed'}</span>
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;">${date} · ${o.paymentMethod || 'COD'}${o.transactionId ? ' · ' + o.transactionId : ''}</div>
+                <div class="order-items">${items}</div>
+                <div class="order-total">Total: ${formatPrice(o.totalAmount)}</div>
+              </div>
+            `;
+          }).join('') + `</div>`;
+        }
+
+        document.getElementById('profileContent').innerHTML = `
+          <div class="profile-header">
+            <div class="profile-avatar">${initials}</div>
+            <div class="profile-info">
+              <h2>${user.name}</h2>
+              <p>${user.email}</p>
+              ${user.phone ? `<p>${user.phone}</p>` : ''}
+            </div>
+          </div>
+          <div class="password-section" id="change-password">
+            <h3>Change Password</h3>
+            <form id="changePasswordForm">
+              <div class="password-fields">
+                <div class="form-group">
+                  <label for="currentPassword">Current Password</label>
+                  <input type="password" id="currentPassword" minlength="6" required>
+                </div>
+                <div class="form-group">
+                  <label for="newPassword">New Password</label>
+                  <input type="password" id="newPassword" minlength="6" required>
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">Confirm New Password</label>
+                  <input type="password" id="confirmPassword" minlength="6" required>
+                </div>
+              </div>
+              <p class="password-message" id="passwordMessage" role="status"></p>
+              <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+          </div>
+          <h3 style="margin-bottom:1.25rem;">Order History</h3>
+          ${ordersHtml}
+        `;
+        document.getElementById('changePasswordForm').addEventListener('submit', changePassword);
+      } catch (e) {
+        document.getElementById('profileContent').innerHTML = '<p class="text-center">Failed to load profile.</p>';
+      }
+    }
+
+    async function changePassword(event) {
+      event.preventDefault();
+      const message = document.getElementById('passwordMessage');
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (newPassword !== confirmPassword) {
+        message.textContent = 'New passwords do not match.';
+        message.className = 'password-message error';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/auth/change-password', {
+          method: 'PUT',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            currentPassword: document.getElementById('currentPassword').value,
+            newPassword
+          })
+        });
+        const data = await res.json();
+        message.textContent = data.message || 'Password update failed.';
+        message.className = res.ok ? 'password-message success' : 'password-message error';
+        if (res.ok) document.getElementById('changePasswordForm').reset();
+      } catch (e) {
+        message.textContent = 'Network error. Please try again.';
+        message.className = 'password-message error';
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
